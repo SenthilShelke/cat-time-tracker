@@ -1,0 +1,317 @@
+:root {
+  --bg: rgba(32, 30, 28, 0.94);
+  --fg: #f2ece4;
+  --muted: #b3a897;
+  --accent: #7bb661;
+  --accent-stop: #d08b6a;
+  --radius: 14px;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  user-select: none;
+}
+
+html,
+body {
+  width: 100%;
+  height: 100%;
+  background: transparent;
+  overflow: hidden;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  color: var(--fg);
+}
+
+.hidden {
+  display: none !important;
+}
+
+/* ---- View switching ---- */
+#cat-wrap { display: none; }
+#panel { display: none; }
+#settings { display: none; }
+body[data-view="collapsed"] #cat-wrap { display: flex; }
+body[data-view="expanded"] #panel { display: block; }
+body[data-view="settings"] #settings { display: flex; }
+
+/* ---- Collapsed cat ---- */
+#cat-wrap {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  -webkit-app-region: no-drag;
+}
+
+#cat-default {
+  width: 96px;
+  height: 96px;
+  object-fit: contain;
+  pointer-events: auto;
+  filter: drop-shadow(0 3px 4px rgba(0, 0, 0, 0.35));
+  transition: transform 0.15s ease;
+}
+
+#cat-wrap:hover #cat-default {
+  transform: scale(1.06);
+}
+
+/* Grab handle sits just above the cat, minimal gap. */
+#drag-handle {
+  position: absolute;
+  top: 12px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 34px;
+  height: 8px;
+  border-radius: 5px;
+  background: rgba(255, 255, 255, 0.22);
+  cursor: grab;
+  opacity: 0;
+  transition: opacity 0.15s ease;
+  -webkit-app-region: drag;
+}
+
+#cat-wrap:hover #drag-handle {
+  opacity: 1;
+}
+
+/* ---- Expanded panel ---- */
+#panel {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  /* The cat image is 150px wide (~112px tall). Its paws/ledge are at the
+     very bottom. We reserve ~102px up top so the body begins just under the
+     paws, leaving the head above the body. */
+  padding-top: 102px;
+  -webkit-app-region: no-drag;
+}
+
+/* Cat peeking over the top edge of the panel body. Pinned to the window top;
+   the image's bottom (paw/ledge line) lands ~10px into the body for a
+   grabbing-the-edge look. */
+#cat-peek {
+  position: absolute;
+  left: 50%;
+  top: 0;
+  transform: translateX(-50%);
+  width: 150px;
+  height: auto;
+  z-index: 2;
+  pointer-events: none;
+  filter: drop-shadow(0 3px 4px rgba(0, 0, 0, 0.4));
+}
+
+#panel-body {
+  position: relative;
+  z-index: 1;
+  height: 100%;
+  background: var(--bg);
+  border-radius: var(--radius);
+  padding: 12px 14px 14px;
+  display: flex;
+  flex-direction: column;
+}
+
+#panel-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 6px;
+  -webkit-app-region: drag; /* drag the window by the header */
+  cursor: grab;
+}
+
+#status-label {
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.header-actions {
+  display: flex;
+  gap: 2px;
+  -webkit-app-region: no-drag;
+}
+
+#settings-btn,
+#collapse-btn {
+  -webkit-app-region: no-drag;
+  background: transparent;
+  border: none;
+  color: var(--muted);
+  font-size: 16px;
+  line-height: 1;
+  cursor: pointer;
+  padding: 2px 5px;
+  border-radius: 6px;
+}
+
+#collapse-btn { font-size: 18px; }
+
+#settings-btn:hover,
+#collapse-btn:hover {
+  color: var(--fg);
+  background: rgba(255, 255, 255, 0.08);
+}
+
+#elapsed {
+  font-size: 30px;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  text-align: center;
+  margin-top: 4px;
+}
+
+#elapsed-sub {
+  font-size: 11px;
+  color: var(--muted);
+  text-align: center;
+  margin-bottom: 12px;
+}
+
+#toggle-btn {
+  -webkit-app-region: no-drag;
+  border: none;
+  border-radius: 10px;
+  padding: 10px;
+  font-size: 15px;
+  font-weight: 600;
+  color: #1c1a18;
+  cursor: pointer;
+  transition: filter 0.12s ease;
+}
+
+#toggle-btn.start { background: var(--accent); }
+#toggle-btn.stop { background: var(--accent-stop); }
+#toggle-btn:hover { filter: brightness(1.08); }
+
+#period {
+  margin-top: 14px;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  padding-top: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.period-row {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+}
+
+.period-label { font-size: 12px; color: var(--muted); }
+
+.period-row span:last-child {
+  font-size: 14px;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+
+.period-dates {
+  font-size: 10px;
+  color: var(--muted);
+  margin-top: -3px;
+}
+
+/* Pay row hidden until an hourly rate is set. */
+#pay-row.hidden { display: none; }
+
+/* ---- Settings view ---- */
+#settings {
+  width: 100%;
+  height: 100%;
+  background: var(--bg);
+  border-radius: var(--radius);
+  padding: 12px 14px 14px;
+  flex-direction: column;
+  gap: 10px;
+  overflow-y: auto;
+  -webkit-app-region: no-drag;
+}
+
+#settings-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 13px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--muted);
+  -webkit-app-region: drag;
+  cursor: grab;
+}
+
+#settings-back {
+  -webkit-app-region: no-drag;
+  background: transparent;
+  border: none;
+  color: var(--muted);
+  font-size: 17px;
+  cursor: pointer;
+  padding: 2px 5px;
+  border-radius: 6px;
+}
+
+#settings-back:hover { color: var(--fg); background: rgba(255,255,255,0.08); }
+
+.setting {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.setting label {
+  font-size: 11px;
+  color: var(--muted);
+}
+
+.setting input,
+.setting select {
+  -webkit-app-region: no-drag;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 8px;
+  color: var(--fg);
+  padding: 7px 9px;
+  font-size: 13px;
+  width: 100%;
+}
+
+.setting input[type="color"] {
+  padding: 2px;
+  height: 32px;
+  cursor: pointer;
+}
+
+.rate-row {
+  display: flex;
+  gap: 6px;
+}
+
+.rate-row #set-rate { flex: 1; }
+.rate-row #set-currency { width: 64px; }
+
+#settings-save {
+  -webkit-app-region: no-drag;
+  margin-top: 4px;
+  border: none;
+  border-radius: 10px;
+  padding: 10px;
+  font-size: 14px;
+  font-weight: 600;
+  color: #1c1a18;
+  background: var(--accent);
+  cursor: pointer;
+}
+
+#settings-save:hover { filter: brightness(1.08); }

@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      http-equiv="Content-Security-Policy"
+      content="default-src 'self'; img-src 'self' data:; style-src 'self' 'unsafe-inline';"
+    />
+    <title>Cat Time Tracker</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <!-- data-view drives which section is visible; set from renderer.js. -->
+  <body data-view="collapsed">
+    <!-- ===== Collapsed view: just the cat ===== -->
+    <div id="cat-wrap" title="Click to open">
+      <div id="drag-handle" title="Drag to move"></div>
+      <img
+        id="cat-default"
+        src="../assets/cat-default.webp"
+        alt="cat"
+        draggable="false"
+      />
+    </div>
+
+    <!-- ===== Expanded view: control panel with cat grabbing the top ===== -->
+    <div id="panel">
+      <!-- Cat peeking over / grabbing the top edge of the panel. -->
+      <img
+        id="cat-peek"
+        src="../assets/cat-peek.webp"
+        alt="cat peeking"
+        draggable="false"
+      />
+
+      <div id="panel-body">
+        <div id="panel-header">
+          <span id="status-label">Stopped</span>
+          <div class="header-actions">
+            <button id="settings-btn" title="Settings">&#9881;</button>
+            <button id="collapse-btn" title="Collapse">&times;</button>
+          </div>
+        </div>
+
+        <div id="elapsed">00:00:00</div>
+        <div id="elapsed-sub">current session</div>
+
+        <button id="toggle-btn" class="start">Start work</button>
+
+        <div id="period">
+          <div class="period-row">
+            <span class="period-label">This period</span>
+            <span id="period-total">0h 00m</span>
+          </div>
+          <div id="period-dates" class="period-dates">—</div>
+          <div class="period-row">
+            <span class="period-label">Today</span>
+            <span id="today-total">0h 00m</span>
+          </div>
+          <div class="period-row" id="pay-row">
+            <span class="period-label">Period pay</span>
+            <span id="period-pay">—</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== Settings view ===== -->
+    <div id="settings">
+      <div id="settings-header">
+        <span>Settings</span>
+        <button id="settings-back" title="Back">&larr;</button>
+      </div>
+
+      <div class="setting">
+        <label for="set-rate">Hourly rate (optional)</label>
+        <div class="rate-row">
+          <input id="set-rate" type="number" min="0" step="0.01" placeholder="e.g. 25" />
+          <input id="set-currency" type="text" maxlength="4" placeholder="USD" />
+        </div>
+      </div>
+
+      <div class="setting">
+        <label for="set-period-start">Period start date</label>
+        <input id="set-period-start" type="date" />
+      </div>
+
+      <div class="setting">
+        <label for="set-period-days">Period length (days)</label>
+        <input id="set-period-days" type="number" min="1" step="1" placeholder="14" />
+      </div>
+
+      <div class="setting">
+        <label for="set-accent">Widget accent color</label>
+        <input id="set-accent" type="color" value="#7bb661" />
+      </div>
+
+      <button id="settings-save">Save</button>
+    </div>
+
+    <script src="renderer.js"></script>
+  </body>
+</html>

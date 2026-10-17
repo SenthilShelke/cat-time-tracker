@@ -1,0 +1,21 @@
+{
+  "name": "cat-time-tracker",
+  "version": "0.1.0",
+  "description": "A floating cat widget that tracks your working hours. Click the cat to start/stop the clock.",
+  "main": "src/main.js",
+  "scripts": {
+    "start": "electron ."
+  },
+  "keywords": [
+    "time-tracking",
+    "electron",
+    "productivity",
+    "freelance",
+    "invoice",
+    "cat"
+  ],
+  "license": "MIT",
+  "devDependencies": {
+    "electron": "^32.0.0"
+  }
+}
