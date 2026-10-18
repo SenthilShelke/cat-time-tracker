@@ -1,7 +1,7 @@
 {
   "name": "cat-time-tracker",
-  "version": "0.1.0",
-  "description": "A floating cat widget that tracks your working hours. Click the cat to start/stop the clock.",
+  "version": "0.1.1",
+  "description": "A cat that lives in your menu bar and tracks your working hours. Click the cat to start/stop the clock.",
   "main": "src/main.js",
   "scripts": {
     "start": "electron .",
@@ -38,7 +38,8 @@
     "publish": {
       "provider": "github",
       "owner": "SenthilShelke",
-      "repo": "cat-time-tracker"
+      "repo": "cat-time-tracker",
+      "releaseType": "release"
     }
   },
   "devDependencies": {
