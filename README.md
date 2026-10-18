@@ -1,31 +1,78 @@
 # cat-time-tracker
 
-A tiny floating cat that lives on your screen and tracks your working hours.
-Click the cat to open a little control panel, hit **Start work**, and the cat
-wakes up. Click **Stop work** and it curls back up to sleep. Perfect for
-part-time or freelance work where you need to tally hours each pay period.
+A tiny cat that lives in your **menu bar** (next to wifi/battery on macOS, or
+the system tray on Windows/Linux) and tracks your working hours. Click the cat
+icon to drop down a little control panel, hit **Start work**, and the menu-bar
+clock starts ticking. Click **Stop work** and it stops. Perfect for part-time
+or freelance work where you need to tally hours each pay period.
 
 Built with [Electron](https://www.electronjs.org/) and plain HTML/CSS/JS — no
-build step, no framework. Clone it and run it.
+build step for development, no framework. Clone it and run it, or package it
+into a double-click app so you never touch the terminal again.
 
 ## Features
 
-- 🐱 Always-on-top, draggable cat widget that stays out of your way
-- ▶️ One-click start/stop timer (awake cat = working, sleeping cat = stopped)
-- 🙀 Click the cat and it pops up to "grab" the control panel, head and paws
-  draped over the top
-- ⏱️ Live current-session clock
+- 🐱 Lives in your **menu bar / system tray** — out of the way, always running
+- ⏱️ Live session clock shown right in the menu bar while you work
+- ▶️ One-click start/stop — from the dropdown panel *or* the tray's right-click menu
+- 🙀 Click the icon and a little control panel drops down below it
 - 📅 Totals for **today** and the current **invoicing period** (fixed periods
   anchored to a start date you choose, default 2 weeks)
 - 💵 Optional hourly rate → shows estimated pay for the period
-- 🎨 Settings screen: hourly rate, period start/length, widget accent color
+- 🎨 Settings screen: hourly rate, period start/length, accent color, and
+  **start-at-login**
+- 🚀 Optional **launch at login** so the cat is always there after a reboot
+- 📦 Package into a double-click app — no terminal needed
 - 💾 Your data stays local in a plain JSON file — nothing leaves your machine
 
 ## Requirements
 
 - [Node.js](https://nodejs.org/) 18 or newer (includes `npm`)
 
-## Getting started
+## Download (easiest — no terminal, no cloning)
+
+Most people don't need the code at all. Just grab the app:
+
+1. Go to the **[Releases page](https://github.com/SenthilShelke/cat-time-tracker/releases/latest)**.
+2. Download the latest installer for your platform:
+   - **macOS (Apple Silicon):** `Cat Time Tracker-<version>-arm64.dmg`
+   - **Windows / Linux:** see the assets on the release (if published).
+3. Open the `.dmg` and drag **Cat Time Tracker** into your Applications folder.
+4. Launch it. The cat appears in your menu bar.
+
+> First launch on macOS: the app is unsigned, so right-click it →
+> **Open** once to get past the "unidentified developer" prompt. Free, and
+> only needed the first time.
+
+Then open **Settings → Start automatically at login** so the cat comes back on
+its own after every reboot — fully terminal-free from here on.
+
+New versions show up on that same Releases page; download the new `.dmg` and
+drag-to-replace. Your logged hours carry over automatically (your data lives
+outside the app — see [Where your data lives](#where-your-data-lives)).
+
+## Build it yourself (optional)
+
+Prefer to build the installer from source instead of downloading it?
+
+```bash
+git clone https://github.com/SenthilShelke/cat-time-tracker.git
+cd cat-time-tracker
+npm install
+npm run dist
+```
+
+This produces an installer in `dist/`:
+
+- **macOS:** `dist/Cat Time Tracker-<version>-arm64.dmg`
+- **Windows:** an `.exe` installer (build on a Windows machine).
+- **Linux:** an `.AppImage`.
+
+Install it the same way as a downloaded build.
+
+## For developers
+
+To run from source with live reloading of your edits (no packaging):
 
 ```bash
 git clone https://github.com/SenthilShelke/cat-time-tracker.git
@@ -34,8 +81,27 @@ npm install
 npm start
 ```
 
-The cat appears as a small floating window. Drag it anywhere by its body.
-Click it to expand the panel; click the ✕ to collapse back to just the cat.
+The cat icon appears in your **menu bar** (macOS, top-right) or **system
+tray** (Windows/Linux). Click it to drop down the control panel; click the ✕
+to tuck it back into the menu bar. While a session is running, the elapsed
+time shows next to the icon. Right-click the icon for a quick Start/Stop menu
+and Quit.
+
+### Cutting a release
+
+Releases are built and published automatically by GitHub Actions
+(`.github/workflows/release.yml`). To ship a new version:
+
+```bash
+# 1. Bump the version in package.json (e.g. 0.1.0 -> 0.1.1), commit it.
+# 2. Tag and push:
+git tag v0.1.1
+git push --tags
+```
+
+Pushing a `v*` tag triggers the workflow, which builds the macOS DMG and
+attaches it to a new GitHub Release named after the tag. Users then download
+it from the Releases page — no action needed from them beyond re-downloading.
 
 ## Where your data lives
 
@@ -77,6 +143,8 @@ Click the gear icon in the panel to open settings:
   out which fixed period today falls into and shows its start/end dates.
 - **Period length (days)** — defaults to 14 (two weeks).
 - **Widget accent color** — the color of buttons and highlights.
+- **Start automatically at login** — when on, the app launches itself every
+  time you log in, so the cat is always waiting in the menu bar.
 
 > "This period" is a **fixed** window, not a rolling one: periods repeat every
 > _period length_ days starting from your _period start date_, so the totals
@@ -84,11 +152,14 @@ Click the gear icon in the panel to open settings:
 
 ## Customizing
 
-- **Swap the cat art:** replace the images in `src/assets/` —
-  `cat-default.webp` (collapsed/sitting cat) and `cat-peek.webp` (the cat
+- **Swap the panel cat art:** replace `src/assets/cat-peek.webp` (the cat
   peeking over the panel). Any image format a browser supports works
-  (webp/png/gif/svg); keep the same filenames or update the `src` paths in
+  (webp/png/gif/svg); keep the same filename or update the `src` path in
   `src/renderer/index.html`.
+- **Swap the menu-bar icon:** replace `src/assets/catTemplate.png` (16×16) and
+  `src/assets/catTemplate@2x.png` (32×32). On macOS these are *template*
+  images — a black shape on transparency — so the system can tint them for
+  light/dark menu bars.
 - **Widget accent color** is set in-app via Settings; it drives the buttons
   and highlights.
 

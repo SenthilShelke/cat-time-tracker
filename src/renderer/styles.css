@@ -29,56 +29,10 @@ body {
 }
 
 /* ---- View switching ---- */
-#cat-wrap { display: none; }
 #panel { display: none; }
 #settings { display: none; }
-body[data-view="collapsed"] #cat-wrap { display: flex; }
 body[data-view="expanded"] #panel { display: block; }
 body[data-view="settings"] #settings { display: flex; }
-
-/* ---- Collapsed cat ---- */
-#cat-wrap {
-  position: relative;
-  width: 100%;
-  height: 100%;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  -webkit-app-region: no-drag;
-}
-
-#cat-default {
-  width: 96px;
-  height: 96px;
-  object-fit: contain;
-  pointer-events: auto;
-  filter: drop-shadow(0 3px 4px rgba(0, 0, 0, 0.35));
-  transition: transform 0.15s ease;
-}
-
-#cat-wrap:hover #cat-default {
-  transform: scale(1.06);
-}
-
-/* Grab handle sits just above the cat, minimal gap. */
-#drag-handle {
-  position: absolute;
-  top: 12px;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 34px;
-  height: 8px;
-  border-radius: 5px;
-  background: rgba(255, 255, 255, 0.22);
-  cursor: grab;
-  opacity: 0;
-  transition: opacity 0.15s ease;
-  -webkit-app-region: drag;
-}
-
-#cat-wrap:hover #drag-handle {
-  opacity: 1;
-}
 
 /* ---- Expanded panel ---- */
 #panel {
@@ -290,6 +244,26 @@ body[data-view="settings"] #settings { display: flex; }
 .setting input[type="color"] {
   padding: 2px;
   height: 32px;
+  cursor: pointer;
+}
+
+/* Horizontal layout for the launch-at-login checkbox row. */
+.setting-row {
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.setting-row label {
+  flex: 1;
+}
+
+.setting-row input[type="checkbox"] {
+  -webkit-app-region: no-drag;
+  width: 16px;
+  height: 16px;
+  flex: 0 0 auto;
   cursor: pointer;
 }
 

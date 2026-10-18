@@ -4,7 +4,8 @@
   "description": "A floating cat widget that tracks your working hours. Click the cat to start/stop the clock.",
   "main": "src/main.js",
   "scripts": {
-    "start": "electron ."
+    "start": "electron .",
+    "dist": "electron-builder"
   },
   "keywords": [
     "time-tracking",
@@ -15,7 +16,33 @@
     "cat"
   ],
   "license": "MIT",
+  "author": "Senthil Shelke",
+  "build": {
+    "appId": "com.senthilshelke.cat-time-tracker",
+    "productName": "Cat Time Tracker",
+    "files": [
+      "src/**/*",
+      "package.json"
+    ],
+    "mac": {
+      "category": "public.app-category.productivity",
+      "target": "dmg"
+    },
+    "win": {
+      "target": "nsis"
+    },
+    "linux": {
+      "target": "AppImage",
+      "category": "Utility"
+    },
+    "publish": {
+      "provider": "github",
+      "owner": "SenthilShelke",
+      "repo": "cat-time-tracker"
+    }
+  },
   "devDependencies": {
-    "electron": "^32.0.0"
+    "electron": "^32.0.0",
+    "electron-builder": "^25.1.8"
   }
 }

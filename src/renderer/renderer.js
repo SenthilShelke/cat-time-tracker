@@ -2,7 +2,6 @@
 
 // --- Element refs ---
 const bodyEl = document.body;
-const catWrap = document.getElementById('cat-wrap');
 const collapseBtn = document.getElementById('collapse-btn');
 const settingsBtn = document.getElementById('settings-btn');
 const settingsBack = document.getElementById('settings-back');
@@ -22,12 +21,13 @@ const inCurrency = document.getElementById('set-currency');
 const inPeriodStart = document.getElementById('set-period-start');
 const inPeriodDays = document.getElementById('set-period-days');
 const inAccent = document.getElementById('set-accent');
+const inOpenAtLogin = document.getElementById('set-open-at-login');
 
 // --- Local view of state (source of truth lives in the main process) ---
 let activeStart = null;
 let sessions = [];
 let settings = null;
-let view = 'collapsed'; // 'collapsed' | 'expanded' | 'settings'
+let view = 'expanded'; // 'expanded' | 'settings' (collapsed = hidden to tray)
 let tick = null;
 
 const MS_PER_DAY = 24 * 60 * 60 * 1000;
@@ -169,6 +169,21 @@ async function refresh(data) {
 
 // --- View switching ---
 async function setView(next) {
+  // 'collapsed' isn't a real DOM view anymore — it just hides the panel back
+  // into the menu bar. Keep the DOM on 'expanded' so the panel renders
+  // immediately the next time the tray icon shows the window.
+  if (next === 'collapsed') {
+    try {
+      await window.catTimer.setView('collapsed'); // main hides the window
+    } catch (err) {
+      console.error('setView IPC failed:', err);
+    }
+    view = 'expanded';
+    bodyEl.setAttribute('data-view', 'expanded');
+    render();
+    return;
+  }
+
   view = next;
   bodyEl.setAttribute('data-view', next);
   if (next === 'settings') populateSettingsForm();
@@ -187,6 +202,7 @@ function populateSettingsForm() {
   inPeriodStart.value = settings.periodStart || '';
   inPeriodDays.value = settings.periodDays || 14;
   inAccent.value = settings.accentColor || '#7bb661';
+  inOpenAtLogin.checked = !!settings.openAtLogin;
 }
 
 async function saveSettingsForm() {
@@ -197,6 +213,7 @@ async function saveSettingsForm() {
     periodStart: inPeriodStart.value || settings.periodStart,
     periodDays: Math.max(1, Number(inPeriodDays.value) || 14),
     accentColor: inAccent.value,
+    openAtLogin: inOpenAtLogin.checked,
   };
   const data = await window.catTimer.saveSettings(partial);
   await refresh(data);
@@ -204,7 +221,6 @@ async function saveSettingsForm() {
 }
 
 // --- Event wiring ---
-catWrap.addEventListener('click', () => setView('expanded'));
 collapseBtn.addEventListener('click', () => setView('collapsed'));
 settingsBtn.addEventListener('click', () => setView('settings'));
 settingsBack.addEventListener('click', () => setView('expanded'));
@@ -224,4 +240,8 @@ inAccent.addEventListener('input', () => {
 });
 
 // --- Init ---
+// Keep the panel in sync when the user starts/stops from the tray menu.
+if (window.catTimer && window.catTimer.onStateChanged) {
+  window.catTimer.onStateChanged((data) => refresh(data));
+}
 refresh();

@@ -1,0 +1,61 @@
+name: Release
+
+# Build and publish a versioned installer whenever you push a version tag
+# (e.g. `git tag v0.1.1 && git push --tags`). The built DMG is attached to a
+# GitHub Release named after the tag, where users can download it.
+#
+# Convention: `main` is the release branch. Development happens on `develop`;
+# when stable, merge into `main` and tag the release ON `main`. A `v*` tag that
+# does NOT point at a commit contained in `main` is rejected below and will not
+# publish — so `main` always equals "what's released".
+on:
+  push:
+    tags:
+      - 'v*'
+
+# electron-builder needs write access to create the Release and upload assets.
+permissions:
+  contents: write
+
+jobs:
+  release:
+    name: Build & publish (macOS)
+    runs-on: macos-latest
+
+    steps:
+      - name: Check out source
+        uses: actions/checkout@v4
+        with:
+          # Fetch full history + branches so we can verify the tag is on main.
+          fetch-depth: 0
+
+      # Guard: only release tags that live on the `main` branch. If someone
+      # tags a commit from `develop` (or anywhere not merged to main), stop
+      # here and publish nothing.
+      - name: Verify tag is on main
+        run: |
+          git fetch origin main --depth=0 2>/dev/null || git fetch origin main
+          if git merge-base --is-ancestor "$GITHUB_SHA" origin/main; then
+            echo "✓ Tagged commit $GITHUB_SHA is on main — proceeding."
+          else
+            echo "::error::Tag $GITHUB_REF_NAME does not point at a commit on main."
+            echo "Releases must be cut from main. Merge develop into main, then tag on main."
+            exit 1
+          fi
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      # Build the DMG and publish it to the GitHub Release for this tag.
+      # GITHUB_TOKEN is provided automatically by Actions; electron-builder
+      # uses it (via the `publish` config in package.json) to upload assets.
+      - name: Build and publish
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: npx electron-builder --mac --publish always

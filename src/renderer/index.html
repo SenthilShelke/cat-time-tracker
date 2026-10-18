@@ -9,19 +9,9 @@
     <title>Cat Time Tracker</title>
     <link rel="stylesheet" href="styles.css" />
   </head>
-  <!-- data-view drives which section is visible; set from renderer.js. -->
-  <body data-view="collapsed">
-    <!-- ===== Collapsed view: just the cat ===== -->
-    <div id="cat-wrap" title="Click to open">
-      <div id="drag-handle" title="Drag to move"></div>
-      <img
-        id="cat-default"
-        src="../assets/cat-default.webp"
-        alt="cat"
-        draggable="false"
-      />
-    </div>
-
+  <!-- data-view drives which section is visible; set from renderer.js.
+       The app opens as a menu-bar popover, so it starts in 'expanded'. -->
+  <body data-view="expanded">
     <!-- ===== Expanded view: control panel with cat grabbing the top ===== -->
     <div id="panel">
       <!-- Cat peeking over / grabbing the top edge of the panel. -->
@@ -92,6 +82,11 @@
       <div class="setting">
         <label for="set-accent">Widget accent color</label>
         <input id="set-accent" type="color" value="#7bb661" />
+      </div>
+
+      <div class="setting setting-row">
+        <label for="set-open-at-login">Start automatically at login</label>
+        <input id="set-open-at-login" type="checkbox" />
       </div>
 
       <button id="settings-save">Save</button>

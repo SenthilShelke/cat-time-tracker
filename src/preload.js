@@ -12,4 +12,11 @@ contextBridge.exposeInMainWorld('catTimer', {
   saveSettings: (partial) => ipcRenderer.invoke('save-settings', partial),
   // view: 'collapsed' | 'expanded' | 'settings'
   setView: (view) => ipcRenderer.invoke('set-view', view),
+  // Subscribe to state pushed from the main process (e.g. when the user
+  // starts/stops from the tray menu). Returns an unsubscribe function.
+  onStateChanged: (cb) => {
+    const handler = (_event, data) => cb(data);
+    ipcRenderer.on('state-changed', handler);
+    return () => ipcRenderer.removeListener('state-changed', handler);
+  },
 });
